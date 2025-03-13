@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #f8f9fc;
+            --text-color: #5a5c69;
+            --dark-color: #3a3b45;
+            --success-color: #1cc88a;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+            --sidebar-width: 250px;
+            --header-height: 70px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fc;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            left: calc(-1 * var(--sidebar-width));
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            padding: 1rem 0;
+        }
+
+        .sidebar-menu-item {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-menu-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-left: 4px solid white;
+        }
+
+        .sidebar-menu-item i {
+            margin-right: 0.5rem;
+            width: 1.5rem;
+            text-align: center;
+        }
+
+        .sidebar-submenu {
+            padding-left: 2rem;
+            height: 0;
+            overflow: hidden;
+            transition: height 0.3s ease;
+        }
+
+        .sidebar-submenu.active {
+            height: auto;
+        }
+
+        .sidebar-submenu-item {
+            padding: 0.5rem 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-submenu-item:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Main content styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: var(--header-height);
+            background-color: white;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            padding: 0 1.5rem;
+        }
+
+        .toggle-button {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-search {
+            position: relative;
+        }
+
+        .header-search input {
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border-radius: 2rem;
+            border: 1px solid #e3e6f0;
+            font-size: 0.85rem;
+            width: 20rem;
+        }
+
+        .header-search i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-color);
+        }
+
+        .content {
+            padding: 1.5rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--dark-color);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Dashboard cards */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.35rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            padding: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .card-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .card-info {
+            font-size: 0.85rem;
+            color: var(--text-color);
+        }
+
+        .card-primary {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .card-success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .card-warning {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .card-danger {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                left: calc(-1 * var(--sidebar-width));
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header-search input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">Inventory System</div>
+            <div class="sidebar-toggle" id="sidebar-toggle">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <!-- Dashboard -->
+            <div class="sidebar-menu-item active" data-page="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </div>
+
+            <!-- Inventory Management -->
+            <div class="sidebar-menu-item" data-submenu="inventory">
+                <i class="fas fa-box"></i>
+                <span>Inventory Management</span>
+                <i class="fas fa-chevron-right" style="float: right;"></i>
+            </div>
+            <div class="sidebar-submenu" id="inventory-submenu">
+                <div class="sidebar-submenu-item" data-page="view-inventory">View Inventory</div>
+                <div class="sidebar-submenu-item" data-page="add-item">Add New Item</div>
+                <div class="sidebar-submenu-item" data-page="edit-item">Edit Item</div>
+                <div class="sidebar-submenu-item" data-page="delete-item">Delete Item</div>
+                <div class="sidebar-submenu-item" data-page="item-categories">Item Categories</div>
+            </div>
+
+            <!-- Borrowing Management -->
+            <div class="sidebar-menu-item" data-submenu="borrowing">
+                <i class="fas fa-handshake"></i>
+                <span>Borrowing Management</span>
+                <i class="fas fa-chevron-right" style="float: right;"></i>
+            </div>
+            <div class="sidebar-submenu" id="borrowing-submenu">
+                <div class="sidebar-submenu-item" data-page="borrowed-items">Borrowed Items</div>
+                <div class="sidebar-submenu-item" data-page="manage-borrowing">Manage Borrowing Periods</div>
+                <div class="sidebar-submenu-item" data-page="overdue-items">Overdue Items</div>
+                <div class="sidebar-submenu-item" data-page="return-management">Return Management</div>
+            </div>
+
+            <!-- Reports -->
+            <div class="sidebar-menu-item" data-submenu="reports">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reports</span>
+                <i class="fas fa-chevron-right" style="float: right;"></i>
+            </div>
+            <div class="sidebar-submenu" id="reports-submenu">
+                <div class="sidebar-submenu-item" data-page="borrowing-history">Borrowing History</div>
+                <div class="sidebar-submenu-item" data-page="stock-reports">Stock Reports</div>
+                <div class="sidebar-submenu-item" data-page="overdue-reports">Overdue Reports</div>
+            </div>
+
+            <!-- User Management -->
+            <div class="sidebar-menu-item" data-submenu="users">
+                <i class="fas fa-users"></i>
+                <span>User Management</span>
+                <i class="fas fa-chevron-right" style="float: right;"></i>
+            </div>
+            <div class="sidebar-submenu" id="users-submenu">
+                <div class="sidebar-submenu-item" data-page="manage-users">Manage Users</div>
+                <div class="sidebar-submenu-item" data-page="roles-permissions">Roles & Permissions</div>
+                <div class="sidebar-submenu-item" data-page="user-activity">User Activity Logs</div>
+            </div>
+
+            <!-- Settings -->
+            <div class="sidebar-menu-item" data-submenu="settings">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+                <i class="fas fa-chevron-right" style="float: right;"></i>
+            </div>
+            <div class="sidebar-submenu" id="settings-submenu">
+                <div class="sidebar-submenu-item" data-page="system-settings">System Settings</div>
+                <div class="sidebar-submenu-item" data-page="notification-settings">Notification Settings</div>
+                <div class="sidebar-submenu-item" data-page="integration-settings">Integration Settings</div>
+            </div>
+
+            <!-- Audit Log -->
+            <div class="sidebar-menu-item" data-page="audit-log">
+                <i class="fas fa-history"></i>
+                <span>Audit Log</span>
+            </div>
+
+            <!-- Help / Support -->
+            <div class="sidebar-menu-item" data-submenu="help">
+                <i class="fas fa-question-circle"></i>
+                <span>Help / Support</span>
+                <i class="fas fa-chevron-right" style="float: right;"></i>
+            </div>
+            <div class="sidebar-submenu" id="help-submenu">
+                <div class="sidebar-submenu-item" data-page="user-guide">User Guide</div>
+                <div class="sidebar-submenu-item" data-page="support-tickets">Support Tickets</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <div class="header">
+            <button class="toggle-button" id="toggle-sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-actions">
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="header-user">
+                    <i class="fas fa-user-circle" style="font-size: 1.5rem;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="content" id="content">
+            <!-- Dashboard Content -->
+            <div class="page" id="dashboard">
+                <h1 class="page-title">Dashboard</h1>
+                <div class="card-container">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <div class="card-title">Total Items</div>
+                            <div class="card-icon"><i class="fas fa-box"></i></div>
+                        </div>
+                        <div class="card-value">1,250</div>
+                        <div class="card-info">Items in inventory</div>
+                    </div>
+                    <div class="card card-success">
+                        <div class="card-header">
+                            <div class="card-title">Borrowing Requests</div>
+                            <div class="card-icon"><i class="fas fa-handshake"></i></div>
+                        </div>
+                        <div class="card-value">25</div>
+                        <div class="card-info">New requests today</div>
+                    </div>
+                    <div class="card card-warning">
+                        <div class="card-header">
+                            <div class="card-title">Pending Returns</div>
+                            <div class="card-icon"><i class="fas fa-clock"></i></div>
+                        </div>
+                        <div class="card-value">18</div>
+                        <div class="card-info">Items due this week</div>
+                    </div>
+                    <div class="card card-danger">
+                        <div class="card-header">
+                            <div class="card-title">System Alerts</div>
+                            <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        </div>
+                        <div class="card-value">5</div>
