@@ -5,264 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Management System</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    <style>
-        :root {
-            --primary-color: #4e73df;
-            --secondary-color: #f8f9fc;
-            --text-color: #5a5c69;
-            --dark-color: #3a3b45;
-            --success-color: #1cc88a;
-            --warning-color: #f6c23e;
-            --danger-color: #e74a3b;
-            --sidebar-width: 250px;
-            --header-height: 70px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f8f9fc;
-            overflow-x: hidden;
-        }
-
-        /* Sidebar styles */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: var(--sidebar-width);
-            background: linear-gradient(180deg, var(--primary-color) 0%, #224abe 100%);
-            color: white;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-            overflow-y: auto;
-        }
-
-        .sidebar.collapsed {
-            left: calc(-1 * var(--sidebar-width));
-        }
-
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1.5rem 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .sidebar-logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .sidebar-toggle {
-            display: none;
-            cursor: pointer;
-        }
-
-        .sidebar-menu {
-            padding: 1rem 0;
-        }
-
-        .sidebar-menu-item {
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .sidebar-menu-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .sidebar-menu-item.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            border-left: 4px solid white;
-        }
-
-        .sidebar-menu-item i {
-            margin-right: 0.5rem;
-            width: 1.5rem;
-            text-align: center;
-        }
-
-        .sidebar-submenu {
-            padding-left: 2rem;
-            height: 0;
-            overflow: hidden;
-            transition: height 0.3s ease;
-        }
-
-        .sidebar-submenu.active {
-            height: auto;
-        }
-
-        .sidebar-submenu-item {
-            padding: 0.5rem 0;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 0.9rem;
-        }
-
-        .sidebar-submenu-item:hover {
-            color: var(--secondary-color);
-        }
-
-        /* Main content styles */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            transition: all 0.3s ease;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        .main-content.expanded {
-            margin-left: 0;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: var(--header-height);
-            background-color: white;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-            padding: 0 1.5rem;
-        }
-
-        .toggle-button {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .header-search {
-            position: relative;
-        }
-
-        .header-search input {
-            padding: 0.5rem 1rem 0.5rem 2.5rem;
-            border-radius: 2rem;
-            border: 1px solid #e3e6f0;
-            font-size: 0.85rem;
-            width: 20rem;
-        }
-
-        .header-search i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-color);
-        }
-
-        .content {
-            padding: 1.5rem;
-        }
-
-        .page-title {
-            font-size: 1.5rem;
-            font-weight: 500;
-            color: var(--dark-color);
-            margin-bottom: 1.5rem;
-        }
-
-        /* Dashboard cards */
-        .card-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .card {
-            background-color: white;
-            border-radius: 0.35rem;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-            padding: 1.5rem;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .card-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-transform: uppercase;
-        }
-
-        .card-icon {
-            font-size: 1.5rem;
-            color: var(--text-color);
-        }
-
-        .card-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--dark-color);
-        }
-
-        .card-info {
-            font-size: 0.85rem;
-            color: var(--text-color);
-        }
-
-        .card-primary {
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .card-success {
-            border-left: 4px solid var(--success-color);
-        }
-
-        .card-warning {
-            border-left: 4px solid var(--warning-color);
-        }
-
-        .card-danger {
-            border-left: 4px solid var(--danger-color);
-        }
-
-        /* Responsive styles */
-        @media (max-width: 768px) {
-            .sidebar {
-                left: calc(-1 * var(--sidebar-width));
-            }
-
-            .sidebar.active {
-                left: 0;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .header-search input {
-                width: 100%;
-            }
-        }
-    </style>
+   <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Sidebar -->
@@ -413,3 +156,217 @@
                             <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
                         </div>
                         <div class="card-value">5</div>
+                        <div class="card-info">Low stock and overdue items</div>
+                    </div>
+                    </div>
+                    
+                    <!-- Table for recent activities -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Recent Activities</div>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background-color: #f8f9fc; border-bottom: 1px solid #e3e6f0;">
+                                        <th style="padding: 0.75rem; text-align: left;">Item</th>
+                                        <th style="padding: 0.75rem; text-align: left;">Action</th>
+                                        <th style="padding: 0.75rem; text-align: left;">User</th>
+                                        <th style="padding: 0.75rem; text-align: left;">Date</th>
+                                        <th style="padding: 0.75rem; text-align: left;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid #e3e6f0;">
+                                        <td style="padding: 0.75rem;">Laptop Dell XPS 15</td>
+                                        <td style="padding: 0.75rem;">Borrowed</td>
+                                        <td style="padding: 0.75rem;">John Smith</td>
+                                        <td style="padding: 0.75rem;">Mar 12, 2025</td>
+                                        <td style="padding: 0.75rem;"><span style="padding: 0.25rem 0.5rem; background-color: #1cc88a; color: white; border-radius: 0.25rem;">Active</span></td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #e3e6f0;">
+                                        <td style="padding: 0.75rem;">Projector Sony VPL</td>
+                                        <td style="padding: 0.75rem;">Returned</td>
+                                        <td style="padding: 0.75rem;">Emily Johnson</td>
+                                        <td style="padding: 0.75rem;">Mar 11, 2025</td>
+                                        <td style="padding: 0.75rem;"><span style="padding: 0.25rem 0.5rem; background-color: #4e73df; color: white; border-radius: 0.25rem;">Completed</span></td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #e3e6f0;">
+                                        <td style="padding: 0.75rem;">Conference Room A/V Set</td>
+                                        <td style="padding: 0.75rem;">Borrowed</td>
+                                        <td style="padding: 0.75rem;">Michael Brown</td>
+                                        <td style="padding: 0.75rem;">Mar 10, 2025</td>
+                                        <td style="padding: 0.75rem;"><span style="padding: 0.25rem 0.5rem; background-color: #f6c23e; color: white; border-radius: 0.25rem;">Pending Return</span></td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #e3e6f0;">
+                                        <td style="padding: 0.75rem;">iPad Pro 12.9"</td>
+                                        <td style="padding: 0.75rem;">Borrowed</td>
+                                        <td style="padding: 0.75rem;">Sarah Davis</td>
+                                        <td style="padding: 0.75rem;">Mar 9, 2025</td>
+                                        <td style="padding: 0.75rem;"><span style="padding: 0.25rem 0.5rem; background-color: #e74a3b; color: white; border-radius: 0.25rem;">Overdue</span></td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #e3e6f0;">
+                                        <td style="padding: 0.75rem;">Office Chair Ergonomic</td>
+                                        <td style="padding: 0.75rem;">Added to Inventory</td>
+                                        <td style="padding: 0.75rem;">Admin User</td>
+                                        <td style="padding: 0.75rem;">Mar 8, 2025</td>
+                                        <td style="padding: 0.75rem;"><span style="padding: 0.25rem 0.5rem; background-color: #36b9cc; color: white; border-radius: 0.25rem;">New</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    </div>
+                    
+                    <!-- Other pages (initially hidden) -->
+                    <div class="page" id="view-inventory" style="display: none;">
+                        <h1 class="page-title">View Inventory</h1>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Inventory Items</div>
+                            </div>
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background-color: #f8f9fc; border-bottom: 1px solid #e3e6f0;">
+                                            <th style="padding: 0.75rem; text-align: left;">ID</th>
+                                            <th style="padding: 0.75rem; text-align: left;">Item Name</th>
+                                            <th style="padding: 0.75rem; text-align: left;">Category</th>
+                                            <th style="padding: 0.75rem; text-align: left;">Quantity</th>
+                                            <th style="padding: 0.75rem; text-align: left;">Status</th>
+                                            <th style="padding: 0.75rem; text-align: left;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Table data would be dynamically loaded here -->
+                                        <tr style="border-bottom: 1px solid #e3e6f0;">
+                                            <td style="padding: 0.75rem;">001</td>
+                                            <td style="padding: 0.75rem;">Laptop Dell XPS 15</td>
+                                            <td style="padding: 0.75rem;">Electronics</td>
+                                            <td style="padding: 0.75rem;">10</td>
+                                            <td style="padding: 0.75rem;"><span style="padding: 0.25rem 0.5rem; background-color: #1cc88a; color: white; border-radius: 0.25rem;">Available</span></td>
+                                            <td style="padding: 0.75rem;">
+                                                <button style="background-color: #4e73df; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 0.25rem; cursor: pointer; margin-right: 0.25rem;"><i class="fas fa-edit"></i></button>
+                                                <button style="background-color: #e74a3b; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 0.25rem; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Add JavaScript for interactivity -->
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Variables
+                            const sidebar = document.getElementById('sidebar');
+                            const mainContent = document.getElementById('main-content');
+                            const toggleSidebar = document.getElementById('toggle-sidebar');
+                            const sidebarMenuItems = document.querySelectorAll('.sidebar-menu-item');
+                            const sidebarSubmenuItems = document.querySelectorAll('.sidebar-submenu-item');
+                            const pages = document.querySelectorAll('.page');
+                            const content = document.getElementById('content');
+                    
+                            // Toggle sidebar
+                            toggleSidebar.addEventListener('click', function() {
+                                sidebar.classList.toggle('collapsed');
+                                mainContent.classList.toggle('expanded');
+                            });
+                    
+                            // Handle sidebar menu items with submenus
+                            sidebarMenuItems.forEach(item => {
+                                const submenuId = item.getAttribute('data-submenu');
+                                if (submenuId) {
+                                    const submenu = document.getElementById(submenuId + '-submenu');
+                                    item.addEventListener('click', function() {
+                                        // Toggle submenu visibility
+                                        const isActive = submenu.classList.contains('active');
+                                        // Close all submenus
+                                        document.querySelectorAll('.sidebar-submenu').forEach(sub => {
+                                            sub.classList.remove('active');
+                                            sub.style.height = '0';
+                                        });
+                                        // Toggle clicked submenu
+                                        if (!isActive) {
+                                            submenu.classList.add('active');
+                                            submenu.style.height = submenu.scrollHeight + 'px';
+                                        }
+                                    });
+                                } else {
+                                    // Handle direct links
+                                    const pageId = item.getAttribute('data-page');
+                                    if (pageId) {
+                                        item.addEventListener('click', function() {
+                                            // Hide all pages
+                                            pages.forEach(page => {
+                                                page.style.display = 'none';
+                                            });
+                                            // Show selected page
+                                            document.getElementById(pageId).style.display = 'block';
+                                            // Update active state
+                                            sidebarMenuItems.forEach(menuItem => {
+                                                menuItem.classList.remove('active');
+                                            });
+                                            sidebarSubmenuItems.forEach(submenuItem => {
+                                                submenuItem.classList.remove('active');
+                                            });
+                                            item.classList.add('active');
+                                            // Close sidebar on mobile
+                                            if (window.innerWidth <= 768) {
+                                                sidebar.classList.add('collapsed');
+                                                mainContent.classList.add('expanded');
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                    
+                            // Handle submenu items
+                            sidebarSubmenuItems.forEach(item => {
+                                const pageId = item.getAttribute('data-page');
+                                if (pageId) {
+                                    item.addEventListener('click', function() {
+                                        // Hide all pages
+                                        pages.forEach(page => {
+                                            page.style.display = 'none';
+                                        });
+                                        // Show selected page
+                                        document.getElementById(pageId).style.display = 'block';
+                                        // Update active state
+                                        sidebarMenuItems.forEach(menuItem => {
+                                            menuItem.classList.remove('active');
+                                        });
+                                        sidebarSubmenuItems.forEach(submenuItem => {
+                                            submenuItem.classList.remove('active');
+                                        });
+                                        item.classList.add('active');
+                                        // Close sidebar on mobile
+                                        if (window.innerWidth <= 768) {
+                                            sidebar.classList.add('collapsed');
+                                            mainContent.classList.add('expanded');
+                                        }
+                                    });
+                                }
+                            });
+                    
+                            // Handle responsive behavior
+                            window.addEventListener('resize', function() {
+                                if (window.innerWidth <= 768) {
+                                    sidebar.classList.add('collapsed');
+                                    mainContent.classList.add('expanded');
+                                } else {
+                                    sidebar.classList.remove('collapsed');
+                                    mainContent.classList.remove('expanded');
+                                }
+                            });
+                    
+                            // Initialize responsive behavior
+                            if (window.innerWidth <= 768) {
+                                sidebar.classList.add('collapsed');
+                                mainContent.classList.add('expanded');
+                            }
+                        });
+                    </script>
+                    </body>
+                    </html>
